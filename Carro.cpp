@@ -9,8 +9,8 @@ void Carro::iniciar() {
 }
 
 void Carro::moverFrente() {
-    digitalWrite(pinMotorEsq, HIGH);
-    digitalWrite(pinMotorDir, HIGH);
+    digitalWrite(pinoMotorEsq, HIGH);
+    digitalWrite(pinoMotorDir, HIGH);
 }
 
 void Carro::parar() {

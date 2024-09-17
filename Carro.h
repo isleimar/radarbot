@@ -1,6 +1,8 @@
 #ifndef CARRO_H
 #define CARRO_H
 
+#include <Arduino.h>
+
 class Carro{
     private:
         int pinoMotorEsq;

@@ -4,6 +4,7 @@
 #include "Carro.h"
 #include "ServoMotor.h"
 #include "SensorDistancia.h"
+#include <Arduino.h>
 
 class Controle {
     private:
@@ -17,6 +18,6 @@ class Controle {
         bool verificarFrente();
         bool verificarLado(int angulo);
         void fazerCurva(int angulo);
-}
+};
 
 #endif
