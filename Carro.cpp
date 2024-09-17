@@ -1,5 +1,4 @@
 #include "Carro.h"
-#include <Arduino.h>
 
 Carro:: Carro(int motorEsq, int motorDir) : pinoMotorEsq(motorEsq), pinoMotorDir(motorDir) {}
 
