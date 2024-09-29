@@ -1,28 +1,39 @@
 #include "Controle.h"
 
 Controle::Controle(Carro* c, ServoMotor* s, SensorDistancia* sens)
-    : carro(c), servo(s), sensor(sens) {}
+    : carro(c), servo(s), sensor(sens){}
 
 void Controle::verificarObstaculo(){
     if (verificarFrente()) {
-        carro->parar();
-        bool obstaculoEsquerda = verificarLado(45);
-        bool obstaculoDireita = verificarLado(135);
+        carro->frear();
+        status = C_PARADO;
+        delay(500);
+        if (!verificarFrente()){
+          return;        
+        }
+        delay(500);
+        bool obstaculoEsquerda = verificarLado(135);
+        delay(500);
+        bool obstaculoDireita = verificarLado(45);
+        delay(500);
         if (!obstaculoEsquerda) {
-            fazerCurva(45);
+            fazerCurvaEsquerda();
         }
         else if (!obstaculoDireita) {
-            fazerCurva(135);
+            fazerCurvaDireta();
         }
         else {
-            fazerCurva(180);
-        }
-        carro->moverFrente();
-    }
+            voltar();
+        }        
+    } 
 }
 
-bool Controle::verificarFrente(){
-    long distancia = sensor->medirDistancia();
+void Controle::iniciar(){
+  servo->girar(90);  
+}
+
+bool Controle::verificarFrente(){   
+    long distancia =  sensor->medirDistancia();    
     return distancia < distanciaSegura;
 }
 
@@ -34,20 +45,55 @@ bool Controle::verificarLado(int angulo) {
     return distancia < distanciaSegura;
 }
 
-void Controle::fazerCurva(int angulo) {
-    if (angulo == 45) {
-        carro->virarEsquerda();
-        carro->parar();
-        delay(500);    
-    } else if (angulo == 135){
-        carro->virarDireita();
-        carro->parar();
-        delay(500);
-    } else if (angulo == 180) {
-        carro->virar180();
-        carro->parar();
-        delay(500);
-        carro->moverFrente();        
-    } 
+void Controle::parar(){
+  carro->frear();
+  status = C_PARADO;
+  delay(1000);
+  esperar = millis() + 1000;  
+}
+
+void Controle::fazerCurvaDireta(){
+  carro->frear();
+  status = C_GIRAR_DIREITA;  
+  carro->girarDireita();
+  esperar = millis() + 450;  
+}
+
+void Controle::fazerCurvaEsquerda(){
+  carro->frear();
+  status = C_GIRAR_ESQUERDA;  
+  carro->girarEsquerda();
+  esperar = millis() + 450;    
+}
+
+
+void Controle::voltar(){
+  carro->frear();
+  status = C_VOLTAR;  
+  carro->girarEsquerda();
+  esperar = millis() + 750;  
+}
+
+void Controle::loop(){  
+  if (esperar <= millis()){
+    switch(status) {
+      case C_PARADO:
+      case C_FRENTE:
+        esperar = millis() + 500;
+        verificarObstaculo();        
+        if (status == C_PARADO){
+          status=C_FRENTE;
+          carro->moverFrente();
+        }        
+        break;
+      case C_GIRAR_DIREITA:
+      case C_GIRAR_ESQUERDA:
+      case C_OBSTACULO:
+      case C_VOLTAR:            
+            parar();
+        break;          
+    }    
+  }
+  carro->loop();
 }
 

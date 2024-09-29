@@ -1,77 +1,70 @@
 #include "Carro.h"
 
-Carro:: Carro(int ena, int in1, int in2, int in3, int in4, int enb)
-    : pinoEnA(ena), 
-      pinoIn1(in1), 
-      pinoIn2(in2), 
-      pinoIn3(in3), 
-      pinoIn4(in4), 
-      pinoEnB(enb)
-      {
-        velocidade = 32;
-      }
+Carro::Carro(Motor* mtDireita, Motor* mtEsquerda, SensorVelocidade* svDireta, SensorVelocidade* svEsquerda, int circRodas):
+    mtDireita(mtDireita),
+    mtEsquerda(mtEsquerda),
+    svDireta(svDireta),
+    svEsquerda(svDireta),
+    circRodas(circRodas),
+    velocidade(0){}
 
-int Carro::getVelocidade() {
-    return velocidade;
+void Carro::definirVelocidade(float velocidade){
+  this->velocidade = velocidade;
 }
 
-void Carro::setVelocidade(int valor){
-    velocidade = valor;
-    analogWrite(pinoEnA, velocidade);
-    analogWrite(pinoEnB, velocidade);    
+float Carro::rmpAlvo(){
+  return (this->velocidade * 60.0) / this->circRodas;
 }
 
-void Carro::iniciar() {
-    pinMode(pinoEnA, OUTPUT);
-    pinMode(pinoIn1, OUTPUT);
-    pinMode(pinoIn2, OUTPUT);
-    pinMode(pinoIn3, OUTPUT);
-    pinMode(pinoIn4, OUTPUT);
-    pinMode(pinoEnB, OUTPUT);
-    setVelocidade(velocidade);
+void Carro::moverFrente(){
+  svDireta->iniciar();
+  svEsquerda->iniciar();
+  mtDireita->definirDirecaoMotor(FRENTE);
+  mtEsquerda->definirDirecaoMotor(FRENTE);
 }
 
-void Carro::moverFrente() {
-    analogWrite(pinoEnA, velocidade);
-    analogWrite(pinoEnB, trunc(velocidade * 0.90));
-    // analogWrite(pinoEnB, velocidade);    
-    digitalWrite(pinoIn1, LOW);
-    digitalWrite(pinoIn2, HIGH);
-    digitalWrite(pinoIn3, LOW);    
-    digitalWrite(pinoIn4, HIGH);
+void Carro::moverTras(){
+  svDireta->iniciar();
+  svEsquerda->iniciar();
+  mtDireita->definirDirecaoMotor(TRAS);
+  mtEsquerda->definirDirecaoMotor(TRAS);
 }
 
-void Carro::parar() {
-    digitalWrite(pinoIn1, LOW);
-    digitalWrite(pinoIn2, LOW);
-    digitalWrite(pinoIn3, LOW);
-    digitalWrite(pinoIn4, LOW);
-    delay(TEMPO_CURVA);
+void Carro::girarDireita(){
+  svDireta->iniciar();
+  svEsquerda->iniciar();
+  mtDireita->definirDirecaoMotor(TRAS);
+  mtEsquerda->definirDirecaoMotor(FRENTE);
 }
 
-void Carro::virarEsquerda(){
-    digitalWrite(pinoIn1, LOW);
-    digitalWrite(pinoIn2, HIGH);
-    digitalWrite(pinoIn3, HIGH);
-    digitalWrite(pinoIn4, LOW);    
-    delay(TEMPO_CURVA);
-    parar();
+void Carro::girarEsquerda(){
+  svDireta->iniciar();
+  svEsquerda->iniciar();
+  mtDireita->definirDirecaoMotor(FRENTE);
+  mtEsquerda->definirDirecaoMotor(TRAS);
 }
 
-void Carro::virarDireita(){
-    digitalWrite(pinoIn1, HIGH);
-    digitalWrite(pinoIn2, LOW);
-    digitalWrite(pinoIn3, LOW);
-    digitalWrite(pinoIn4, HIGH);    
-    delay(TEMPO_CURVA);
-    parar();
+void Carro::frear(){
+  mtDireita->pararMotor();
+  mtEsquerda->pararMotor();
+  svDireta->parar();
+  svEsquerda->parar();
 }
 
-void Carro::virar180(){
-    digitalWrite(pinoIn1, HIGH);
-    digitalWrite(pinoIn2, LOW);
-    digitalWrite(pinoIn3, LOW);
-    digitalWrite(pinoIn4, HIGH);    
-    delay(TEMPO_180);
-    parar();
+void Carro::loop(){
+  float alvo = rmpAlvo();  
+  if (mtDireita->lerDirecaoMotor() != PARADO){    
+    novoPwm(alvo, mtDireita, svDireta);
+  }
+  if (mtEsquerda->lerDirecaoMotor() != PARADO){    
+    novoPwm(alvo, mtEsquerda, svEsquerda);
+  }
+}
+
+void Carro::novoPwm(float alvo, Motor* mt, SensorVelocidade* sv){
+  float rpm = sv->getRPM();
+  int error = alvo - rpm;
+  // int pwm = mt->lerPwm();
+  int novoPwm = constrain(map(error, -100, 100, 0, 255), 0, 128);  
+  mt->definirPwm(novoPwm);
 }

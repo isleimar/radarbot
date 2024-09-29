@@ -15,6 +15,6 @@ long SensorDistancia::medirDistancia(){
     delayMicroseconds(10);
     digitalWrite(pinoTrigger, LOW);
     long duracao = pulseIn(pinoEcho, HIGH);
-    long distancia = duracao * 0.034 / 2;
+    long distancia = duracao * 0.034 / 2;    
     return distancia;
 }

@@ -1,30 +1,29 @@
 #ifndef CARRO_H
 #define CARRO_H
 
-#define TEMPO_CURVA 400
-#define TEMPO_180   900
-
 #include <Arduino.h>
+#include "Motor.h"
+#include "SensorVelocidade.h"
 
 class Carro{
-    private:
-        int pinoEnA;
-        int pinoIn1;
-        int pinoIn2;
-        int pinoIn3;
-        int pinoIn4;
-        int pinoEnB;
-        int velocidade;        
-    public:
-        Carro(int ena, int in1, int in2, int in3, int in4, int enb);
-        int getVelocidade();
-        void setVelocidade(int valor);
-        void iniciar();
-        void moverFrente();
-        void parar();
-        void virarEsquerda();
-        void virarDireita();
-        void virar180();
+  private:
+    Motor* mtDireita;
+    Motor* mtEsquerda;    
+    SensorVelocidade* svDireta;
+    SensorVelocidade* svEsquerda;
+    int circRodas; //unidades
+    float velocidade; //circunferencia das rodas por segundo    
+    float rmpAlvo();
+    void novoPwm(float alvo, Motor* ph, SensorVelocidade* sv);
+  public:
+    Carro(Motor* mtDireita, Motor* mtEsquerda, SensorVelocidade* svDireta, SensorVelocidade* svEsquerda, int circRodas);
+    void definirVelocidade(float velocidade);
+    void moverFrente();
+    void moverTras();
+    void girarDireita();
+    void girarEsquerda();
+    void frear();
+    void loop();
 };
 
 #endif;
