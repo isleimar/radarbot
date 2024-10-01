@@ -48,12 +48,10 @@ void setup(){
     servo2.girar(60);
 
     motorDireita.iniciar();
-    motorEsquerda.iniciar();    
-
-    senVelDireita.setCallback([](){ senVelDireita.incPulso(); });    
-    senVelEsquerda.setCallback([](){ senVelEsquerda.incPulso(); });
-    senVelDireita.iniciar();
-    senVelEsquerda.iniciar();
+    motorEsquerda.iniciar();
+    
+    senVelDireita.iniciar([](){ senVelDireita.incPulso(); });
+    senVelEsquerda.iniciar([](){ senVelEsquerda.incPulso(); });
 
     carro.definirVelocidade(VELOCIDADE);
 

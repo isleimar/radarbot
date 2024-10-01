@@ -17,29 +17,29 @@ float Carro::rmpAlvo(){
 }
 
 void Carro::moverFrente(){
-  svDireta->iniciar();
-  svEsquerda->iniciar();
+  svDireta->continuar();
+  svEsquerda->continuar();
   mtDireita->definirDirecaoMotor(FRENTE);
   mtEsquerda->definirDirecaoMotor(FRENTE);
 }
 
 void Carro::moverTras(){
-  svDireta->iniciar();
-  svEsquerda->iniciar();
+  svDireta->continuar();
+  svEsquerda->continuar();
   mtDireita->definirDirecaoMotor(TRAS);
   mtEsquerda->definirDirecaoMotor(TRAS);
 }
 
 void Carro::girarDireita(){
-  svDireta->iniciar();
-  svEsquerda->iniciar();
+  svDireta->continuar();
+  svEsquerda->continuar();
   mtDireita->definirDirecaoMotor(TRAS);
   mtEsquerda->definirDirecaoMotor(FRENTE);
 }
 
 void Carro::girarEsquerda(){
-  svDireta->iniciar();
-  svEsquerda->iniciar();
+  svDireta->continuar();
+  svEsquerda->continuar();
   mtDireita->definirDirecaoMotor(FRENTE);
   mtEsquerda->definirDirecaoMotor(TRAS);
 }

@@ -3,11 +3,10 @@
 
 #include<Arduino.h>
 
-
 #define MILISSEGUNDOS_POR_MINUTO 60000.0
 #define INTERVALO_TEMPO 500
 
-class SensorVelocidade {
+class SensorVelocidade{
   private:
     void (*callBackFunc)();
     int triggerPin;
@@ -16,12 +15,12 @@ class SensorVelocidade {
     long tempoAnterior;
   public:
     SensorVelocidade(int triggerPin, int pulsosPorVolta);
-    void setCallback(void (*func)());
-    float getRPM();
-    int getTriggerPin();
-    void incPulso();
-    void iniciar();
+    void iniciar(void (*func)());
+    void reset(); 
+    float getRPM(); 
+    void incPulso();   
     void parar();
+    void continuar();
 };
 
 #endif
