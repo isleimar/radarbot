@@ -10,7 +10,7 @@ void SensorDistancia::iniciar() {
     pinMode(pinoEcho, INPUT); 
 }
 
-float SensorDistancia::getDistancia(){    
+float SensorDistancia::lerSensor() {
     digitalWrite(pinoTrigger, LOW);
     delayMicroseconds(2);
     digitalWrite(pinoTrigger, HIGH);
@@ -19,4 +19,8 @@ float SensorDistancia::getDistancia(){
     long duracao = pulseIn(pinoEcho, HIGH);    
     float distancia = duracao * 0.034 / 2;    
     return distancia;
+}
+
+float SensorDistancia::getDistancia(){    
+    return lerSensor();
 }

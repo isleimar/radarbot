@@ -34,6 +34,12 @@ void Carro::definirVelocidade(float velocidade){
   this->velocidade = velocidade;
 }
 
+unsigned long Carro::getDistanciaPercorrida() const{  
+  unsigned long distDireita = svDireta->getPulsosTotal() / circRodas;
+  unsigned long distEsquerda = svEsquerda->getPulsosTotal() / circRodas;
+  return (distDireita + distEsquerda) / 2;
+}
+
 void Carro::moverFrente(){
   mudarDirecao(FRENTE, FRENTE);
 }

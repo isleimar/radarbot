@@ -21,7 +21,7 @@ unsigned long SensorVelocidade::getPulsos() const{
 }
 
 unsigned long SensorVelocidade::getPulsosTotal() const{
-  return pulsosTotal;
+  return pulsosTotal + pulsosParcial;
 }
 
 float SensorVelocidade::getRPM(){

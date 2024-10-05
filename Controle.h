@@ -22,8 +22,9 @@ class Controle {
         void mudarEstado(EstadoControleBase* estadoNovo);
         void loop();
         void iniciar();
+        unsigned long getDistanciaPercorrida() const;
         float distanciaObstaculo() const;
-        bool temObstaculo() const;
+        bool temObstaculo() const;        
         void carroParar();
         void carroAndar();
         void carroVoltar();
@@ -40,6 +41,7 @@ class EstadoControleBase {
   public:    
     virtual ~EstadoControleBase()= default;
     virtual String getDescricaoEstado() = 0;
+    virtual unsigned long getDistanciaPercorrida() const;
     virtual void iniciar() = 0;
     virtual void obstaculoEncontrado() = 0;
     virtual void loop() = 0;
@@ -49,14 +51,16 @@ class EstadoControleBase {
 class EstadoControle: public EstadoControleBase {
   private:
     unsigned long tempoFinal;
+    unsigned long distanciaInicial;
     virtual void executar() = 0;
   protected:
     Controle* controle;
     String descricaoEstado = "Controle";
     void esperar(unsigned long esperarMilisegundos);
   public:
-    virtual String getDescricaoEstado() override;
     EstadoControle(Controle* controle);
+    virtual String getDescricaoEstado() override;
+    virtual unsigned long getDistanciaPercorrida() const override;
     virtual void iniciar() override;
     virtual void obstaculoEncontrado();
     virtual void loop() override;

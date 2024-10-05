@@ -11,7 +11,7 @@ void Controle::mudarEstado(EstadoControleBase* estadoNovo){
     estadoAtual->finalizar();
     delete estadoAtual;  
   }  
-  Serial.println(estadoNovo->getDescricaoEstado());
+  // Serial.println(estadoNovo->getDescricaoEstado());
   estadoAtual = estadoNovo;  
   estadoNovo->iniciar();
 }
@@ -26,6 +26,10 @@ bool Controle::temObstaculo() const{
 }
 
 void Controle::iniciar(){}
+
+unsigned long Controle::getDistanciaPercorrida() const {
+  return carro->getDistanciaPercorrida();
+}
 
 void Controle::loop(){
   if (estadoAtual != nullptr){
@@ -72,13 +76,17 @@ void Controle::girarSensorEsquerda(){
 
 EstadoControle::EstadoControle(Controle* controle):
   controle(controle),
-  tempoFinal(millis()+100){}
+  tempoFinal(millis()+100){
+    distanciaInicial = controle->getDistanciaPercorrida();
+  }
 
 void EstadoControle::esperar(unsigned long esperarMilisegundos){
   tempoFinal = millis() + esperarMilisegundos;
 }
 
 void EstadoControle::loop(){
+  // Serial.print("Distancia Percorrida: ");
+  // Serial.println(getDistanciaPercorrida());
   if (tempoFinal < millis()) {
     executar();
   }
@@ -86,6 +94,10 @@ void EstadoControle::loop(){
 
 String EstadoControle::getDescricaoEstado(){
   return descricaoEstado;
+}
+
+unsigned long EstadoControle::getDistanciaPercorrida() const{
+  return controle->getDistanciaPercorrida() - distanciaInicial;
 }
 
 void EstadoControle::iniciar(){}
@@ -113,6 +125,7 @@ void EstadoParado::executar(){
 
 void EstadoAndando::iniciar(){
   controle->girarSensorFrente();
+  delay(1000);
   if (controle->temObstaculo()){
     obstaculoEncontrado();
   } else {
@@ -120,7 +133,7 @@ void EstadoAndando::iniciar(){
   }
 }
 
-void EstadoAndando::executar(){
+void EstadoAndando::executar(){  
   if (controle->temObstaculo()){
     obstaculoEncontrado();
   }
@@ -129,7 +142,12 @@ void EstadoAndando::executar(){
 
 void EstadoAndando::obstaculoEncontrado(){
   controle->carroParar();
-  controle->mudarEstado(new EstadoOlhandoDireita(controle));
+  delay(500);
+  if (controle->temObstaculo()){
+    controle->mudarEstado(new EstadoOlhandoDireita(controle));
+  } else {
+    iniciar();
+  }
 }
 
 // --------------------------
@@ -173,17 +191,17 @@ void EstadoOlhandoEsquerda::executar(){
 void EstadoGirandoDireita::iniciar(){
   controle->girarSensorFrente();
   controle->carroVirarDireita();
-  esperar(100);
+  // esperar(100);
 }
 
 void EstadoGirandoDireita::executar(){
-  Serial.println("Executando - Estado Girando Direita");
-  controle->carroParar();  
-  if (controle->temObstaculo()){
-    controle->carroVirarDireita();
-    esperar(100);    
-  }else{
-     controle->mudarEstado(new EstadoParado(controle));   
+  if (getDistanciaPercorrida() > 0){
+    controle->carroParar();  
+    if (controle->temObstaculo()) {
+      controle->mudarEstado(new EstadoOlhandoDireita(controle));
+    } else {
+      controle->mudarEstado(new EstadoParado(controle));
+    }
   }
 }
 
@@ -194,16 +212,17 @@ void EstadoGirandoDireita::executar(){
 void EstadoGirandoEsquerda::iniciar(){
   controle->girarSensorFrente();
   controle->carroVirarEsquerda();
-  esperar(100);
+  // esperar(100);
 }
 
 void EstadoGirandoEsquerda::executar(){
-  controle->carroParar();
-  if (controle->temObstaculo()){
-    controle->carroVirarEsquerda();
-    esperar(100);    
-  }else{
-     controle->mudarEstado(new EstadoParado(controle));   
+  if (getDistanciaPercorrida() > 0){
+    controle->carroParar();  
+    if (controle->temObstaculo()) {
+      controle->mudarEstado(new EstadoOlhandoEsquerda(controle));
+    } else {
+      controle->mudarEstado(new EstadoParado(controle));
+    }
   }
 }
 
@@ -214,15 +233,16 @@ void EstadoGirandoEsquerda::executar(){
 void EstadoVoltar::iniciar(){
   controle->girarSensorFrente();
   controle->carroVoltar();
-  esperar(100);
+  // esperar(100);
 }
 
 void EstadoVoltar::executar(){
-  controle->carroParar();
-  if (controle->temObstaculo()){
-    controle->mudarEstado(new EstadoOlhandoDireita(controle));    
-    esperar(100);    
-  }else{
-     controle->mudarEstado(new EstadoParado(controle));
-  }
+  if (getDistanciaPercorrida() > 1){
+    controle->carroParar();  
+    if (controle->temObstaculo()) {
+      controle->mudarEstado(new EstadoOlhandoDireita(controle));
+    } else {
+      controle->mudarEstado(new EstadoParado(controle));
+    }
+  }  
 }

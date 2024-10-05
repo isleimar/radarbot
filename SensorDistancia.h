@@ -4,7 +4,8 @@
 class SensorDistancia {
     private:
         int pinoTrigger;
-        int pinoEcho;        
+        int pinoEcho;
+        float lerSensor(); 
     public:
         SensorDistancia(int trigger, int echo);
         void iniciar();

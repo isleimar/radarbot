@@ -19,8 +19,9 @@ class Carro{
     void novoPwm(float alvo, Motor* ph, SensorVelocidade* sv);
     void mudarDirecao(DirecaoMotor direcaoDireita, DirecaoMotor direcaoEsquerda);
   public:
-    Carro(Motor* mtDireita, Motor* mtEsquerda, SensorVelocidade* svDireta, SensorVelocidade* svEsquerda, int circRodas);
+    Carro(Motor* mtDireita, Motor* mtEsquerda, SensorVelocidade* svDireta, SensorVelocidade* svEsquerda, int circRodas);    
     void definirVelocidade(float velocidade);
+    unsigned long getDistanciaPercorrida() const;
     void moverFrente();
     void moverTras();
     void girarDireita();
