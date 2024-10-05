@@ -43,7 +43,8 @@ Controle controle(&carro, &servo, &sensor);
 
 
 void setup(){
-    Serial.begin(9600);    
+    Serial.begin(9600);   
+
     servo2.iniciar();
     servo2.girar(60);
 
@@ -57,13 +58,13 @@ void setup(){
 
     servo.iniciar();
     sensor.iniciar();    
-    controle.iniciar();
-}
 
-long old_time = millis();
+    controle.iniciar();
+    delay(1000);
+}
 
 void loop(){
     controle.loop();    
-    delay(1);
+    delay(5);
 }
 

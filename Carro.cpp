@@ -63,8 +63,7 @@ void Carro::loop(){
 
 void Carro::novoPwm(float alvo, Motor* mt, SensorVelocidade* sv){
   float rpm = sv->getRPM();
-  int error = alvo - rpm;
-  // int pwm = mt->lerPwm();
+  int error = alvo - rpm;  
   int novoPwm = constrain(map(error, -100, 100, 0, 255), 0, 128);  
   mt->definirPwm(novoPwm);
 }

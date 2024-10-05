@@ -18,6 +18,6 @@ float SensorDistancia::getDistancia(){
     delay(10);
     digitalWrite(pinoTrigger, LOW);
     long duracao = pulseIn(pinoEcho, HIGH);
-    float distancia = duracao * 0.034 / 2;
+    float distancia = duracao * 0.034 / 2;    
     return distancia;
 }
