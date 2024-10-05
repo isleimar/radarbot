@@ -19,19 +19,19 @@ class Controle {
         EstadoControleBase* estadoAtual;
     public:
         Controle(Carro* c, ServoMotor* s, SensorDistancia* sens);
-        void mudarEstado(EstadoControleBase* estadoNovo);        
+        void mudarEstado(EstadoControleBase* estadoNovo);
         void loop();
         void iniciar();
-        bool temObstaculo();
-        float distanciaObstaculo();
+        float distanciaObstaculo() const;
+        bool temObstaculo() const;
         void carroParar();
         void carroAndar();
         void carroVoltar();
         void carroVirarDireita();
         void carroVirarEsquerda();
-        void sensorFrente();
-        void sensorDireita();
-        void sensorEsquerda();
+        void girarSensorFrente();
+        void girarSensorDireita();
+        void girarSensorEsquerda();
 };
 
 class EstadoControleBase {
@@ -39,7 +39,7 @@ class EstadoControleBase {
     virtual void executar() = 0;
   public:    
     virtual ~EstadoControleBase()= default;
-    virtual String getNomeEstado() = 0;
+    virtual String getDescricaoEstado() = 0;
     virtual void iniciar() = 0;
     virtual void obstaculoEncontrado() = 0;
     virtual void loop() = 0;
@@ -48,13 +48,14 @@ class EstadoControleBase {
 
 class EstadoControle: public EstadoControleBase {
   private:
+    const String descricaoEstado = "Estado Controle";
     unsigned long tempoFinal;
     virtual void executar() = 0;
   protected:
     Controle* controle;
     void esperar(unsigned long esperarMilisegundos);
   public:
-    virtual String getNomeEstado() override;
+    virtual String getDescricaoEstado() override;
     EstadoControle(Controle* controle);
     virtual void iniciar() override;
     virtual void obstaculoEncontrado();
@@ -64,69 +65,69 @@ class EstadoControle: public EstadoControleBase {
 
 class EstadoParado: public EstadoControle{
   private:
+    const String descricaoEstado = "Estado Parado";
     void executar() override;
   public:
-    EstadoParado(Controle* controle);
-    virtual String getNomeEstado() override;
+    EstadoParado(Controle* controle);    
     virtual void iniciar() override;
 };
 
 
 class EstadoAndando: public EstadoControle{
   private:
+    const String descricaoEstado = "Estado Andando";
     void executar() override;
   public:
     EstadoAndando(Controle* controle);
-    virtual String getNomeEstado() override;
     virtual void iniciar() override;
     virtual void obstaculoEncontrado() override;
 };
 
 class EstadoOlhandoDireita: public EstadoControle{
   private:
+    const String descricaoEstado = "Estado Olhando para Direita";
     void executar() override;
   public:
     EstadoOlhandoDireita(Controle* controle);
-    virtual String getNomeEstado() override;
     virtual void iniciar() override;
 };
 
 class EstadoOlhandoEsquerda: public EstadoControle{
   private:
+    const String descricaoEstado = "Estado Olhando para Esquerda";
     void executar() override;
   public:
     EstadoOlhandoEsquerda(Controle* controle);
-    virtual String getNomeEstado() override;
     virtual void iniciar() override;
 };
 
 
 class EstadoGirandoDireita: public EstadoControle{
   private:
+    const String descricaoEstado = "Estado Girando para Direita";
     void executar() override;
   public:
     EstadoGirandoDireita(Controle* controle);
-    virtual String getNomeEstado() override;
     virtual void iniciar() override;
 };
 
 
 class EstadoGirandoEsquerda: public EstadoControle{
   private:
+    const String descricaoEstado = "Estado Girando para Esquerda";
     void executar() override;
   public:
     EstadoGirandoEsquerda(Controle* controle);
-    virtual String getNomeEstado() override;
     virtual void iniciar() override;
 };
 
 
 class EstadoVoltar: public EstadoControle{
   private:
+    const String descricaoEstado = "Estado Voltando";
     void executar() override;
   public:
     EstadoVoltar(Controle* controle);
-    virtual String getNomeEstado() override;
     virtual void iniciar() override;
 };
 

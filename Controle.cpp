@@ -10,13 +10,17 @@ void Controle::mudarEstado(EstadoControleBase* estadoNovo){
   if (estadoAtual != nullptr){
     estadoAtual->finalizar();
     delete estadoAtual;  
-  }
-  // Serial.println(estadoNovo->getNomeEstado());
+  }  
   estadoAtual = estadoNovo;  
   estadoNovo->iniciar();
 }
 
-bool Controle::temObstaculo(){  
+float Controle::distanciaObstaculo() const{
+  float distancia = sensor->getDistancia();  
+  return distancia;
+}
+
+bool Controle::temObstaculo() const{  
   return distanciaObstaculo() < DISTANCIA_SEGURA;
 }
 
@@ -27,11 +31,6 @@ void Controle::loop(){
     estadoAtual->loop();
   }
   carro->loop();  
-}
-
-float Controle::distanciaObstaculo(){
-  float distancia = sensor->getDistancia();  
-  return distancia;
 }
 
 void Controle::carroParar(){
@@ -54,19 +53,16 @@ void Controle::carroVirarEsquerda(){
   carro->girarEsquerda();
 }
 
-void Controle::sensorFrente(){
-  servo->girar(90);
-  delay(500);
+void Controle::girarSensorFrente(){
+  servo->girar(90);  
 }
 
-void Controle::sensorDireita(){
-  servo->girar(45);
-  delay(500);
+void Controle::girarSensorDireita(){
+  servo->girar(45);  
 }
 
-void Controle::sensorEsquerda(){
-  servo->girar(135);
-  delay(500);
+void Controle::girarSensorEsquerda(){
+  servo->girar(135);  
 }
 
 // --------------------------
@@ -87,7 +83,10 @@ void EstadoControle::loop(){
   }
 }
 
-String EstadoControle::getNomeEstado(){}
+String EstadoControle::getDescricaoEstado(){
+  return descricaoEstado;
+}
+
 void EstadoControle::iniciar(){}
 void EstadoControle::obstaculoEncontrado(){}
 void EstadoControle::finalizar(){}
@@ -98,18 +97,14 @@ void EstadoControle::executar(){}
 //---------------------------
 EstadoParado::EstadoParado(Controle* controle):  EstadoControle(controle){}
 
-String EstadoParado::getNomeEstado(){
-  return "Estado Parado";
+void EstadoParado::iniciar(){
+  controle->carroParar();
+  controle->girarSensorFrente();
+  esperar(1000);
 }
 
 void EstadoParado::executar(){
   controle->mudarEstado(new EstadoAndando(controle));
-}
-
-void EstadoParado::iniciar(){
-  controle->carroParar();
-  controle->sensorFrente();
-  esperar(1000);
 }
 
 // --------------------------
@@ -117,17 +112,12 @@ void EstadoParado::iniciar(){
 //---------------------------
 EstadoAndando::EstadoAndando(Controle* controle):  EstadoControle(controle){}
 
-String EstadoAndando::getNomeEstado(){
-  return "Estado Andando";
-}
-
-void EstadoAndando::iniciar(){  
-  controle->carroAndar();
+void EstadoAndando::iniciar(){
+  controle->girarSensorFrente();
   if (controle->temObstaculo()){
     obstaculoEncontrado();
   } else {
     controle->carroAndar();
-    controle->sensorFrente();
   }
 }
 
@@ -148,12 +138,8 @@ void EstadoAndando::obstaculoEncontrado(){
 //---------------------------
 EstadoOlhandoDireita::EstadoOlhandoDireita(Controle* controle):  EstadoControle(controle){}
 
-String EstadoOlhandoDireita::getNomeEstado(){
-  return "Estado Olhando Direita";
-}
-
 void EstadoOlhandoDireita::iniciar(){
-  controle->sensorDireita();
+  controle->girarSensorDireita();
   esperar(100);
 }
 
@@ -165,18 +151,13 @@ void EstadoOlhandoDireita::executar(){
   }  
 }
 
-
 // --------------------------
 //  ESTADO OLHANDO ESQUERDA
 //---------------------------
 EstadoOlhandoEsquerda::EstadoOlhandoEsquerda(Controle* controle):  EstadoControle(controle){}
 
-String EstadoOlhandoEsquerda::getNomeEstado(){
-  return "Estado Olhando Esquerda";
-}
-
 void EstadoOlhandoEsquerda::iniciar(){
-  controle->sensorEsquerda();
+  controle->girarSensorEsquerda();
   esperar(100);
 }
 
@@ -194,12 +175,8 @@ void EstadoOlhandoEsquerda::executar(){
 
 EstadoGirandoDireita::EstadoGirandoDireita(Controle* controle):  EstadoControle(controle){}
 
-String EstadoGirandoDireita::getNomeEstado(){
-  return "Estado Girando Direita";
-}
-
 void EstadoGirandoDireita::iniciar(){
-  controle->sensorFrente();
+  controle->girarSensorFrente();
   controle->carroVirarDireita();
   esperar(100);
 }
@@ -208,7 +185,7 @@ void EstadoGirandoDireita::executar(){
   controle->carroParar();
   if (controle->temObstaculo()){
     controle->carroVirarDireita();
-    esperar(200);    
+    esperar(100);    
   }else{
      controle->mudarEstado(new EstadoParado(controle));   
   }
@@ -220,26 +197,21 @@ void EstadoGirandoDireita::executar(){
 
 EstadoGirandoEsquerda::EstadoGirandoEsquerda(Controle* controle):  EstadoControle(controle){}
 
-String EstadoGirandoEsquerda::getNomeEstado(){
-  return "Estado Girando Esquerda";
-}
-
 void EstadoGirandoEsquerda::iniciar(){
-  controle->sensorFrente();
+  controle->girarSensorFrente();
   controle->carroVirarEsquerda();
-  esperar(200);
+  esperar(100);
 }
 
 void EstadoGirandoEsquerda::executar(){
   controle->carroParar();
   if (controle->temObstaculo()){
     controle->carroVirarEsquerda();
-    esperar(200);    
+    esperar(100);    
   }else{
      controle->mudarEstado(new EstadoParado(controle));   
   }
 }
-
 
 // --------------------------
 //       ESTADO VOLTAR
@@ -247,14 +219,10 @@ void EstadoGirandoEsquerda::executar(){
 
 EstadoVoltar::EstadoVoltar(Controle* controle):  EstadoControle(controle){}
 
-String EstadoVoltar::getNomeEstado(){
-  return "Estado Voltando";
-}
-
 void EstadoVoltar::iniciar(){
-  controle->sensorFrente();
+  controle->girarSensorFrente();
   controle->carroVoltar();
-  esperar(200);
+  esperar(100);
 }
 
 void EstadoVoltar::executar(){
