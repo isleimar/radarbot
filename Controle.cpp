@@ -7,11 +7,14 @@ Controle::Controle(Carro* c, ServoMotor* s, SensorDistancia* sens)
 }
 
 void Controle::mudarEstado(EstadoControleBase* estadoNovo){
+  estadoAtual->finalizar();
   delete estadoAtual;
   estadoAtual = estadoNovo;
+  estadoNovo->iniciar();
+  Serial.println(estadoNovo->getNomeEstado());
 }
 
-bool Controle::temObstaculo(){
+bool Controle::temObstaculo(){  
   return distanciaObstaculo() < DISTANCIA_SEGURA;
 }
 
@@ -22,11 +25,16 @@ void Controle::loop(){
 }
 
 float Controle::distanciaObstaculo(){
-  return sensor->getDistancia();
+  float distancia = sensor->getDistancia();  
+  return distancia;
 }
 
 void Controle::carroParar(){
   carro->frear();
+}
+
+void Controle::carroVoltar(){
+  carro->moverTras();
 }
 
 void Controle::carroAndar(){
@@ -43,14 +51,17 @@ void Controle::carroVirarEsquerda(){
 
 void Controle::sensorFrente(){
   servo->girar(90);
+  delay(500);
 }
 
 void Controle::sensorDireita(){
   servo->girar(45);
+  delay(500);
 }
 
 void Controle::sensorEsquerda(){
   servo->girar(135);
+  delay(500);
 }
 
 // --------------------------
@@ -59,7 +70,7 @@ void Controle::sensorEsquerda(){
 
 EstadoControle::EstadoControle(Controle* controle):
   controle(controle),
-  tempoFinal(millis()){}
+  tempoFinal(millis()+1000){}
 
 void EstadoControle::esperar(unsigned long esperarMilisegundos){
   tempoFinal = millis() + esperarMilisegundos;
@@ -71,6 +82,7 @@ void EstadoControle::loop(){
   }
 }
 
+String EstadoControle::getNomeEstado(){}
 void EstadoControle::iniciar(){}
 void EstadoControle::obstaculoEncontrado(){}
 void EstadoControle::finalizar(){}
@@ -80,6 +92,10 @@ void EstadoControle::executar(){}
 //       ESTADO PARADO
 //---------------------------
 EstadoParado::EstadoParado(Controle* controle):  EstadoControle(controle){}
+
+String EstadoParado::getNomeEstado(){
+  return "Estado Parado";
+}
 
 void EstadoParado::executar(){
   controle->mudarEstado(new EstadoAndando(controle));
@@ -91,11 +107,14 @@ void EstadoParado::iniciar(){
   esperar(1000);
 }
 
-
 // --------------------------
 //       ESTADO ANDANDO
 //---------------------------
 EstadoAndando::EstadoAndando(Controle* controle):  EstadoControle(controle){}
+
+String EstadoAndando::getNomeEstado(){
+  return "Estado Andando";
+}
 
 void EstadoAndando::iniciar(){
   if (controle->temObstaculo()){
@@ -118,11 +137,14 @@ void EstadoAndando::obstaculoEncontrado(){
   controle->mudarEstado(new EstadoOlhandoDireita(controle));
 }
 
-
 // --------------------------
-//       ESTADO OLHANDO DIREITA
+//   ESTADO OLHANDO DIREITA
 //---------------------------
 EstadoOlhandoDireita::EstadoOlhandoDireita(Controle* controle):  EstadoControle(controle){}
+
+String EstadoOlhandoDireita::getNomeEstado(){
+  return "Estado Olhando Direita";
+}
 
 void EstadoOlhandoDireita::iniciar(){
   controle->sensorDireita();
@@ -138,114 +160,104 @@ void EstadoOlhandoDireita::executar(){
 }
 
 
+// --------------------------
+//  ESTADO OLHANDO ESQUERDA
+//---------------------------
+EstadoOlhandoEsquerda::EstadoOlhandoEsquerda(Controle* controle):  EstadoControle(controle){}
+
+String EstadoOlhandoEsquerda::getNomeEstado(){
+  return "Estado Olhando Esquerda";
+}
+
+void EstadoOlhandoEsquerda::iniciar(){
+  controle->sensorEsquerda();
+  esperar(100);
+}
+
+void EstadoOlhandoEsquerda::executar(){
+  if (controle->temObstaculo()){
+    controle->mudarEstado(new EstadoVoltar(controle));
+  } else {
+    controle->mudarEstado(new EstadoGirandoEsquerda(controle));
+  }
+}
 
 
+// --------------------------
+//  ESTADO GIRANDO DIREITA
+//---------------------------
+
+EstadoGirandoDireita::EstadoGirandoDireita(Controle* controle):  EstadoControle(controle){}
+
+String EstadoGirandoDireita::getNomeEstado(){
+  return "Estado Girando Direita";
+}
+
+void EstadoGirandoDireita::iniciar(){
+  controle->sensorFrente();
+  controle->carroVirarDireita();
+  esperar(100);
+}
+
+void EstadoGirandoDireita::executar(){
+  controle->carroParar();
+  if (controle->temObstaculo()){
+    controle->carroVirarDireita();
+    esperar(1000);    
+  }else{
+     controle->mudarEstado(new EstadoParado(controle));   
+  }
+}
+
+// --------------------------
+//  ESTADO GIRANDO ESQUERDA
+//---------------------------
+
+EstadoGirandoEsquerda::EstadoGirandoEsquerda(Controle* controle):  EstadoControle(controle){}
+
+String EstadoGirandoEsquerda::getNomeEstado(){
+  return "Estado Girando Esquerda";
+}
+
+void EstadoGirandoEsquerda::iniciar(){
+  controle->sensorFrente();
+  controle->carroVirarEsquerda();
+  esperar(100);
+}
+
+void EstadoGirandoEsquerda::executar(){
+  controle->carroParar();
+  if (controle->temObstaculo()){
+    controle->carroVirarEsquerda();
+    esperar(1000);    
+  }else{
+     controle->mudarEstado(new EstadoParado(controle));   
+  }
+}
 
 
+// --------------------------
+//       ESTADO VOLTAR
+//---------------------------
 
+EstadoVoltar::EstadoVoltar(Controle* controle):  EstadoControle(controle){}
 
+String EstadoVoltar::getNomeEstado(){
+  return "Estado Voltando";
+}
 
+void EstadoVoltar::iniciar(){
+  controle->sensorFrente();
+  controle->carroVoltar();
+  esperar(100);
+}
 
-
-
-
-
-
-
-// void Controle::esperar(int millisegundos){
-//   tempoEsperar = millis() + millisegundos;
-// }
-
-// void Controle::paraFrente(){
-//   servo->girar(90);
-//   carro->moverFrente();
-//   esperar(100);
-// }
-
-// void Controle::olharParaDireita(){
-//   carro->frear();
-//   servo->girar(45); //Girar ServoMotor para a Direita
-//   status = C_OLHAR_DIREITA;
-//   esperar(2000);
-// }
-
-// void Controle::olharParaEsquerda(){
-//   carro->frear();
-//   servo->girar(135); //Girar ServoMotor para a Esquerda
-//   status = C_OLHAR_ESQUERDA;
-//   esperar(2000);
-// }
-
-// void Controle::fazerCurvaDireta(){
-//   servo->girar(90);
-//   carro->frear();
-//   status = C_GIRAR_DIREITA;  
-//   carro->girarDireita();
-//   esperar(TEMPO_CURVA);  
-// }
-
-// void Controle::fazerCurvaEsquerda(){
-//   servo->girar(90);
-//   carro->frear();
-//   status = C_GIRAR_ESQUERDA;  
-//   carro->girarEsquerda();
-//   esperar(TEMPO_CURVA);
-// }
-
-// bool Controle::temObstaculo(){
-//   return sensor->getDistancia() < DISTANCIA_SEGURA;
-// }
-
-// void Controle::parar(){
-//   carro->frear();
-//   status = C_PARADO;  
-//   esperar(1000);
-// }
-
-// void Controle::loop(){  
-//   if (tempoEsperar <= millis()){    
-//     switch(status) {
-//       case C_PARADO:
-//         // Serial.println("PARADO");
-//         status=C_FRENTE;
-//         paraFrente();
-//       break;
-//       case C_FRENTE:        
-//         // Serial.println("FRENTE");
-//         if (temObstaculo()) {
-//           olharParaDireita();            
-//         } else {
-//           esperar(100);
-//         }        
-//         break;
-//       case C_OLHAR_DIREITA: //Depois de olhar para a Direita
-//         // Serial.println("OLHAR DIREITA");
-//         if (temObstaculo()) {
-//           olharParaEsquerda();          
-//         } else {
-//           fazerCurvaDireta();          
-//         }
-//         break;
-//       case C_OLHAR_ESQUERDA: //Depois de olhar para Esquerda        
-//         // Serial.println("OLHAR ESQUERDA");
-//         fazerCurvaEsquerda();
-//         break;  
-//       case C_GIRAR_DIREITA:
-//         // Serial.println("GIRAR DIREITA");
-//       case C_GIRAR_ESQUERDA:
-//         // Serial.println("GIRAR ESQUERDA");
-//         carro->frear();
-//         if (temObstaculo()) {          
-//           status=C_OLHAR_DIREITA;
-//           esperar(1000);          
-//         } else {
-//           status=C_PARADO;
-//           esperar(500);
-//         }        
-//         break;                
-//     }    
-//   }
-//   carro->loop();
-//   sensor->loop();
-// }
-
+void EstadoVoltar::executar(){
+  controle->carroParar();
+  if (controle->temObstaculo()){
+    controle->mudarEstado(new EstadoOlhandoDireita(controle));    
+    esperar(100);    
+  }else{
+     controle->mudarEstado(new EstadoParado(controle));
+  }
+}

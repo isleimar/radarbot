@@ -26,6 +26,7 @@ class Controle {
         float distanciaObstaculo();
         void carroParar();
         void carroAndar();
+        void carroVoltar();
         void carroVirarDireita();
         void carroVirarEsquerda();
         void sensorFrente();
@@ -38,6 +39,7 @@ class EstadoControleBase {
     virtual void executar() = 0;
   public:    
     virtual ~EstadoControleBase()= default;
+    virtual String getNomeEstado() = 0;
     virtual void iniciar() = 0;
     virtual void obstaculoEncontrado() = 0;
     virtual void loop() = 0;
@@ -52,6 +54,7 @@ class EstadoControle: public EstadoControleBase {
     Controle* controle;
     void esperar(unsigned long esperarMilisegundos);
   public:
+    virtual String getNomeEstado() override;
     EstadoControle(Controle* controle);
     virtual void iniciar() override;
     virtual void obstaculoEncontrado();
@@ -64,6 +67,7 @@ class EstadoParado: public EstadoControle{
     void executar() override;
   public:
     EstadoParado(Controle* controle);
+    virtual String getNomeEstado() override;
     virtual void iniciar() override;
 };
 
@@ -73,6 +77,7 @@ class EstadoAndando: public EstadoControle{
     void executar() override;
   public:
     EstadoAndando(Controle* controle);
+    virtual String getNomeEstado() override;
     virtual void iniciar() override;
     virtual void obstaculoEncontrado() override;
 };
@@ -82,14 +87,47 @@ class EstadoOlhandoDireita: public EstadoControle{
     void executar() override;
   public:
     EstadoOlhandoDireita(Controle* controle);
+    virtual String getNomeEstado() override;
     virtual void iniciar() override;
-    virtual void finalizar() override;
+};
+
+class EstadoOlhandoEsquerda: public EstadoControle{
+  private:
+    void executar() override;
+  public:
+    EstadoOlhandoEsquerda(Controle* controle);
+    virtual String getNomeEstado() override;
+    virtual void iniciar() override;
 };
 
 
+class EstadoGirandoDireita: public EstadoControle{
+  private:
+    void executar() override;
+  public:
+    EstadoGirandoDireita(Controle* controle);
+    virtual String getNomeEstado() override;
+    virtual void iniciar() override;
+};
 
-// class EstadoOlhandoEsquerda: public EstadoControle{};
-// class EstadoGirandoDireita: public EstadoControle{};
-// class EstadoGirandoEsquerda: public EstadoControle{};
+
+class EstadoGirandoEsquerda: public EstadoControle{
+  private:
+    void executar() override;
+  public:
+    EstadoGirandoEsquerda(Controle* controle);
+    virtual String getNomeEstado() override;
+    virtual void iniciar() override;
+};
+
+
+class EstadoVoltar: public EstadoControle{
+  private:
+    void executar() override;
+  public:
+    EstadoVoltar(Controle* controle);
+    virtual String getNomeEstado() override;
+    virtual void iniciar() override;
+};
 
 #endif

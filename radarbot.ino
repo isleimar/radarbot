@@ -58,7 +58,6 @@ void setup(){
     servo.iniciar();
     sensor.iniciar();    
     controle.iniciar();
-
 }
 
 long old_time = millis();
