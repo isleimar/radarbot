@@ -20,14 +20,14 @@ class Motor{
     boolean motorInvertido;
     DirecaoMotor direcaoMotor;
     int pwm;
-    int r_in1();
-    int r_in2();
+    int r_in1() const;
+    int r_in2() const;
     void atualizarMotor();
   public:
     Motor(int pinoEnb, int pinoIn1, int pinoIn2, boolean motorInvertido);
-    int lerPwm();
+    int lerPwm() const;
     void definirPwm(int pwm);    
-    DirecaoMotor lerDirecaoMotor();
+    DirecaoMotor lerDirecaoMotor() const;
     void definirDirecaoMotor(DirecaoMotor direcaoMotor);
     void iniciar();
     void pararMotor();    

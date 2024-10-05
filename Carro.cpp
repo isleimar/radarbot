@@ -4,44 +4,50 @@ Carro::Carro(Motor* mtDireita, Motor* mtEsquerda, SensorVelocidade* svDireta, Se
     mtDireita(mtDireita),
     mtEsquerda(mtEsquerda),
     svDireta(svDireta),
-    svEsquerda(svDireta),
+    svEsquerda(svEsquerda),
     circRodas(circRodas),
-    velocidade(0){}
+    velocidade(0),
+    pulsosDireita(0),
+    pulsosEsquerda(0){}
+
+float Carro::rmpAlvo() const{
+  return (this->velocidade * 60.0) / this->circRodas;
+}
+
+void Carro::novoPwm(float alvo, Motor* mt, SensorVelocidade* sv){
+  float rpm = sv->getRPM();
+  int error = constrain((alvo - rpm), -100, 100);  
+  int novoPwm = map(error, -100, 100, 0, 128);  
+  mt->definirPwm(novoPwm);
+}
+
+void Carro::mudarDirecao(DirecaoMotor direcaoDireita, DirecaoMotor direcaoEsquerda){
+  pulsosDireita += svDireta->getPulsos();
+  pulsosEsquerda += svEsquerda->getPulsos();
+  svDireta->continuar();
+  svEsquerda->continuar();
+  mtDireita->definirDirecaoMotor(direcaoDireita);
+  mtEsquerda->definirDirecaoMotor(direcaoEsquerda);
+}
 
 void Carro::definirVelocidade(float velocidade){
   this->velocidade = velocidade;
 }
 
-float Carro::rmpAlvo(){
-  return (this->velocidade * 60.0) / this->circRodas;
-}
-
 void Carro::moverFrente(){
-  svDireta->continuar();
-  svEsquerda->continuar();
-  mtDireita->definirDirecaoMotor(FRENTE);
-  mtEsquerda->definirDirecaoMotor(FRENTE);
+  mudarDirecao(FRENTE, FRENTE);
 }
 
 void Carro::moverTras(){
-  svDireta->continuar();
-  svEsquerda->continuar();
-  mtDireita->definirDirecaoMotor(TRAS);
-  mtEsquerda->definirDirecaoMotor(TRAS);
+  mudarDirecao(TRAS, TRAS);
 }
 
 void Carro::girarDireita(){
-  svDireta->continuar();
-  svEsquerda->continuar();
-  mtDireita->definirDirecaoMotor(TRAS);
-  mtEsquerda->definirDirecaoMotor(FRENTE);
+  mudarDirecao(TRAS, FRENTE);  
 }
 
 void Carro::girarEsquerda(){
-  svDireta->continuar();
-  svEsquerda->continuar();
-  mtDireita->definirDirecaoMotor(FRENTE);
-  mtEsquerda->definirDirecaoMotor(TRAS);
+  mudarDirecao(FRENTE, TRAS);
 }
 
 void Carro::frear(){
@@ -61,9 +67,3 @@ void Carro::loop(){
   }
 }
 
-void Carro::novoPwm(float alvo, Motor* mt, SensorVelocidade* sv){
-  float rpm = sv->getRPM();
-  int error = alvo - rpm;  
-  int novoPwm = constrain(map(error, -100, 100, 0, 255), 0, 128);  
-  mt->definirPwm(novoPwm);
-}

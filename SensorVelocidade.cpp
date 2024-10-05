@@ -3,12 +3,21 @@
 SensorVelocidade::SensorVelocidade(int triggerPin, int pulsosPorVolta):
   triggerPin(triggerPin),
   pulsosPorVolta(pulsosPorVolta),
-  contPulsos(0),
+  pulsosParcial(0),
+  pulsosTotal(0),
   tempoAnterior(millis()){}
 
 void SensorVelocidade::iniciar(void (*func)()){  
   pinMode(triggerPin, INPUT);
   callBackFunc = func;
+}
+
+void SensorVelocidade::incPulso(){
+  contPulsos++;
+}
+
+unsigned long SensorVelocidade::getPulsos() const{
+  return contPulsos;
 }
 
 float SensorVelocidade::getRPM(){
@@ -20,19 +29,16 @@ float SensorVelocidade::getRPM(){
   return rpm;
 }
 
-void SensorVelocidade::incPulso(){
-  contPulsos++;
-}
 void SensorVelocidade::reset(){
   tempoAnterior = millis();
   contPulsos = 0;
 }
 
+void SensorVelocidade::parar(){
+  detachInterrupt(digitalPinToInterrupt(triggerPin));
+}
+
 void SensorVelocidade::continuar(){  
   reset();  
   attachInterrupt(digitalPinToInterrupt(triggerPin), callBackFunc, FALLING);
-}
-
-void SensorVelocidade::parar(){
-  detachInterrupt(digitalPinToInterrupt(triggerPin));
 }

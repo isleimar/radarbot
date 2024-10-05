@@ -229,7 +229,7 @@ void EstadoVoltar::executar(){
   controle->carroParar();
   if (controle->temObstaculo()){
     controle->mudarEstado(new EstadoOlhandoDireita(controle));    
-    esperar(200);    
+    esperar(100);    
   }else{
      controle->mudarEstado(new EstadoParado(controle));
   }

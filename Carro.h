@@ -11,10 +11,13 @@ class Carro{
     Motor* mtEsquerda;    
     SensorVelocidade* svDireta;
     SensorVelocidade* svEsquerda;
+    unsigned long pulsosEsquerda;
+    unsigned long pulsosDireita;
     int circRodas; //unidades
-    float velocidade; //circunferencia das rodas por segundo    
-    float rmpAlvo();
+    float velocidade; //distancia da circunferencia das rodas por segundo    
+    float rmpAlvo() const;
     void novoPwm(float alvo, Motor* ph, SensorVelocidade* sv);
+    void mudarDirecao(DirecaoMotor direcaoDireita, DirecaoMotor direcaoEsquerda);
   public:
     Carro(Motor* mtDireita, Motor* mtEsquerda, SensorVelocidade* svDireta, SensorVelocidade* svEsquerda, int circRodas);
     void definirVelocidade(float velocidade);

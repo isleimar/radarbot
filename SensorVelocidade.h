@@ -10,15 +10,19 @@ class SensorVelocidade{
   private:
     void (*callBackFunc)();
     int triggerPin;
-    int pulsosPorVolta;
-    volatile int contPulsos;
+    int pulsosPorVolta;    
+    volatile unsigned long pulsosParcial;
+    unsigned long pulsosTotal;
+    unsigned long tempo;
+
     long tempoAnterior;
   public:
     SensorVelocidade(int triggerPin, int pulsosPorVolta);
     void iniciar(void (*func)());
-    void reset(); 
+    void incPulso();
+    unsigned long getPulsos() const;
     float getRPM(); 
-    void incPulso();   
+    void reset(); 
     void parar();
     void continuar();
 };

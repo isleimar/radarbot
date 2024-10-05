@@ -8,11 +8,11 @@ Motor::Motor(int pinoEnb, int pinoIn1, int pinoIn2, boolean motorInvertido):
  direcaoMotor(PARADO),
  pwm(0){}
 
-int Motor::r_in1(){
+int Motor::r_in1() const{
   return motorInvertido ? pinoIn2 : pinoIn1;
 }
 
-int Motor::r_in2(){
+int Motor::r_in2() const{
   return motorInvertido ? pinoIn1 : pinoIn2;
 }
 
@@ -30,7 +30,7 @@ void Motor::atualizarMotor(){
   }
 }
 
-int Motor::lerPwm(){
+int Motor::lerPwm() const{
   return this->pwm;
 }
 
@@ -39,7 +39,7 @@ void Motor::definirPwm(int pwm){
   atualizarMotor();
 }
 
-DirecaoMotor Motor::lerDirecaoMotor(){  
+DirecaoMotor Motor::lerDirecaoMotor() const{  
   return direcaoMotor;  
 }
 
