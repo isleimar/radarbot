@@ -24,12 +24,20 @@ unsigned long SensorVelocidade::getPulsosTotal() const{
   return pulsosTotal + pulsosParcial;
 }
 
+float SensorVelocidade::getVoltas() const{
+  return ((float)getPulsos() / pulsosPorVolta);
+}
+
+float SensorVelocidade::getVoltasTotal() const{
+  return ((float)getPulsosTotal() / pulsosPorVolta);
+}
+
 float SensorVelocidade::getRPM(){
   long decorrido = millis() - tempoAnterior;
   if (decorrido <= 0){
     return 0.0;
   }
-  float rpm = ((float)pulsosParcial / (float)pulsosPorVolta) * MILISSEGUNDOS_POR_MINUTO / (float)decorrido;  
+  float rpm = (getVoltas() / (float)decorrido) *  MILISSEGUNDOS_POR_MINUTO;  
   return rpm;
 }
 

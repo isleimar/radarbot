@@ -20,6 +20,8 @@ class SensorVelocidade{
     void incPulso();
     unsigned long getPulsos() const;
     unsigned long getPulsosTotal() const;
+    float getVoltas() const;
+    float getVoltasTotal() const;
     float getRPM(); 
     void reset(); 
     void parar();

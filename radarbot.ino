@@ -29,10 +29,10 @@
 Motor motorDireita(PIN_ENB, PIN_IN3, PIN_IN4, true);
 Motor motorEsquerda(PIN_ENA, PIN_IN1, PIN_IN2, true);
 
-SensorVelocidade senVelDireita(SENS_DIREITA, 20);
-SensorVelocidade senVelEsquerda(SENS_ESQUERDA, 20);
+SensorVelocidade senVelDireita(SENS_DIREITA, 20);// 20 <== Pulsos por voltas
+SensorVelocidade senVelEsquerda(SENS_ESQUERDA, 20); // 20 <== Pulsos por voltas
 
-Carro carro(&motorDireita, &motorEsquerda, &senVelDireita, &senVelEsquerda, 20);
+Carro carro(&motorDireita, &motorEsquerda, &senVelDireita, &senVelEsquerda, 20); //20cm de diametro das rodas
 
 ServoMotor servo(PIN_SERVO);
 ServoMotor servo2(PIN_SERVO_2);

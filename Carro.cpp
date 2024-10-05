@@ -17,7 +17,7 @@ float Carro::rmpAlvo() const{
 void Carro::novoPwm(float alvo, Motor* mt, SensorVelocidade* sv){
   float rpm = sv->getRPM();
   int error = constrain((alvo - rpm), -100, 100);  
-  int novoPwm = map(error, -100, 100, 0, 128);  
+  int novoPwm = map(error, -100, 100, 0, 255);  
   mt->definirPwm(novoPwm);
 }
 
@@ -34,10 +34,10 @@ void Carro::definirVelocidade(float velocidade){
   this->velocidade = velocidade;
 }
 
-unsigned long Carro::getDistanciaPercorrida() const{  
-  unsigned long distDireita = svDireta->getPulsosTotal() / circRodas;
-  unsigned long distEsquerda = svEsquerda->getPulsosTotal() / circRodas;
-  return (distDireita + distEsquerda) / 2;
+long Carro::getDistanciaPercorrida() const{  
+  float distDireita = svDireta->getVoltasTotal() * circRodas;
+  float distEsquerda = svEsquerda->getVoltasTotal() * circRodas;
+  return (long)((distDireita + distEsquerda) / 2);
 }
 
 void Carro::moverFrente(){

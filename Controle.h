@@ -17,12 +17,14 @@ class Controle {
         ServoMotor* servo;
         SensorDistancia* sensor;
         EstadoControleBase* estadoAtual;
+        unsigned long distanciaInicialEstado;
     public:
         Controle(Carro* c, ServoMotor* s, SensorDistancia* sens);
         void mudarEstado(EstadoControleBase* estadoNovo);
         void loop();
         void iniciar();
         unsigned long getDistanciaPercorrida() const;
+        unsigned long getDistanciaTotalPercorrida() const;
         float distanciaObstaculo() const;
         bool temObstaculo() const;        
         void carroParar();
@@ -80,12 +82,17 @@ class EstadoParado: public EstadoControle{
 
 class EstadoAndando: public EstadoControle{
   private:    
-    void executar() override;     
+    void executar() override;
+    int distanciaMedida;
+    int distanciaInicialPercorrida;
+    int lerDistanciaReal();
   public:
     EstadoAndando(Controle* controle): EstadoControle(controle) {
       EstadoControle::descricaoEstado = "Estado Andando";
     };
     virtual void iniciar() override;
+    int getDistanciaEsperada();
+    virtual void loop() override;
     virtual void obstaculoEncontrado() override;
 };
 
@@ -109,7 +116,6 @@ class EstadoOlhandoEsquerda: public EstadoControle{
     virtual void iniciar() override;
 };
 
-
 class EstadoGirandoDireita: public EstadoControle{
   private:
     void executar() override;
@@ -120,7 +126,6 @@ class EstadoGirandoDireita: public EstadoControle{
     virtual void iniciar() override;
 };
 
-
 class EstadoGirandoEsquerda: public EstadoControle{
   private:
     void executar() override;
@@ -130,7 +135,6 @@ class EstadoGirandoEsquerda: public EstadoControle{
     };
     virtual void iniciar() override;
 };
-
 
 class EstadoVoltar: public EstadoControle{
   private:

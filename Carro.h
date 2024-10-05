@@ -21,7 +21,7 @@ class Carro{
   public:
     Carro(Motor* mtDireita, Motor* mtEsquerda, SensorVelocidade* svDireta, SensorVelocidade* svEsquerda, int circRodas);    
     void definirVelocidade(float velocidade);
-    unsigned long getDistanciaPercorrida() const;
+    long getDistanciaPercorrida() const;
     void moverFrente();
     void moverTras();
     void girarDireita();
