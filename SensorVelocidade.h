@@ -12,15 +12,14 @@ class SensorVelocidade{
     int triggerPin;
     int pulsosPorVolta;    
     volatile unsigned long pulsosParcial;
-    unsigned long pulsosTotal;
-    unsigned long tempo;
-
-    long tempoAnterior;
+    unsigned long pulsosTotal;    
+    unsigned long tempoAnterior;
   public:
     SensorVelocidade(int triggerPin, int pulsosPorVolta);
     void iniciar(void (*func)());
     void incPulso();
     unsigned long getPulsos() const;
+    unsigned long getPulsosTotal() const;
     float getRPM(); 
     void reset(); 
     void parar();

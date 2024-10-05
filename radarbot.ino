@@ -57,7 +57,7 @@ void setup(){
     carro.definirVelocidade(VELOCIDADE);
 
     servo.iniciar();
-    sensor.iniciar();    
+    sensor.iniciar(); 
 
     controle.iniciar();
     delay(1000);

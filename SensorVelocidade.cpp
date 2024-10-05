@@ -13,11 +13,15 @@ void SensorVelocidade::iniciar(void (*func)()){
 }
 
 void SensorVelocidade::incPulso(){
-  contPulsos++;
+  pulsosParcial++;
 }
 
 unsigned long SensorVelocidade::getPulsos() const{
-  return contPulsos;
+  return pulsosParcial;
+}
+
+unsigned long SensorVelocidade::getPulsosTotal() const{
+  return pulsosTotal;
 }
 
 float SensorVelocidade::getRPM(){
@@ -25,13 +29,14 @@ float SensorVelocidade::getRPM(){
   if (decorrido <= 0){
     return 0.0;
   }
-  float rpm = ((float)contPulsos / (float)pulsosPorVolta) * MILISSEGUNDOS_POR_MINUTO / (float)decorrido;  
+  float rpm = ((float)pulsosParcial / (float)pulsosPorVolta) * MILISSEGUNDOS_POR_MINUTO / (float)decorrido;  
   return rpm;
 }
 
 void SensorVelocidade::reset(){
+  pulsosTotal += pulsosParcial;
   tempoAnterior = millis();
-  contPulsos = 0;
+  pulsosParcial = 0;
 }
 
 void SensorVelocidade::parar(){

@@ -11,6 +11,7 @@ void Controle::mudarEstado(EstadoControleBase* estadoNovo){
     estadoAtual->finalizar();
     delete estadoAtual;  
   }  
+  Serial.println(estadoNovo->getDescricaoEstado());
   estadoAtual = estadoNovo;  
   estadoNovo->iniciar();
 }
@@ -95,7 +96,6 @@ void EstadoControle::executar(){}
 // --------------------------
 //       ESTADO PARADO
 //---------------------------
-EstadoParado::EstadoParado(Controle* controle):  EstadoControle(controle){}
 
 void EstadoParado::iniciar(){
   controle->carroParar();
@@ -110,7 +110,6 @@ void EstadoParado::executar(){
 // --------------------------
 //       ESTADO ANDANDO
 //---------------------------
-EstadoAndando::EstadoAndando(Controle* controle):  EstadoControle(controle){}
 
 void EstadoAndando::iniciar(){
   controle->girarSensorFrente();
@@ -136,7 +135,6 @@ void EstadoAndando::obstaculoEncontrado(){
 // --------------------------
 //   ESTADO OLHANDO DIREITA
 //---------------------------
-EstadoOlhandoDireita::EstadoOlhandoDireita(Controle* controle):  EstadoControle(controle){}
 
 void EstadoOlhandoDireita::iniciar(){
   controle->girarSensorDireita();
@@ -154,7 +152,6 @@ void EstadoOlhandoDireita::executar(){
 // --------------------------
 //  ESTADO OLHANDO ESQUERDA
 //---------------------------
-EstadoOlhandoEsquerda::EstadoOlhandoEsquerda(Controle* controle):  EstadoControle(controle){}
 
 void EstadoOlhandoEsquerda::iniciar(){
   controle->girarSensorEsquerda();
@@ -173,8 +170,6 @@ void EstadoOlhandoEsquerda::executar(){
 //  ESTADO GIRANDO DIREITA
 //---------------------------
 
-EstadoGirandoDireita::EstadoGirandoDireita(Controle* controle):  EstadoControle(controle){}
-
 void EstadoGirandoDireita::iniciar(){
   controle->girarSensorFrente();
   controle->carroVirarDireita();
@@ -182,7 +177,8 @@ void EstadoGirandoDireita::iniciar(){
 }
 
 void EstadoGirandoDireita::executar(){
-  controle->carroParar();
+  Serial.println("Executando - Estado Girando Direita");
+  controle->carroParar();  
   if (controle->temObstaculo()){
     controle->carroVirarDireita();
     esperar(100);    
@@ -194,8 +190,6 @@ void EstadoGirandoDireita::executar(){
 // --------------------------
 //  ESTADO GIRANDO ESQUERDA
 //---------------------------
-
-EstadoGirandoEsquerda::EstadoGirandoEsquerda(Controle* controle):  EstadoControle(controle){}
 
 void EstadoGirandoEsquerda::iniciar(){
   controle->girarSensorFrente();
@@ -216,8 +210,6 @@ void EstadoGirandoEsquerda::executar(){
 // --------------------------
 //       ESTADO VOLTAR
 //---------------------------
-
-EstadoVoltar::EstadoVoltar(Controle* controle):  EstadoControle(controle){}
 
 void EstadoVoltar::iniciar(){
   controle->girarSensorFrente();
