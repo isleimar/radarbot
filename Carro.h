@@ -16,7 +16,7 @@ class Carro{
     int circRodas; //unidades
     float velocidade; //distancia da circunferencia das rodas por segundo    
     float rmpAlvo() const;
-    void novoPwm(float alvo, Motor* ph, SensorMotor* sv);
+    void novoPwm(float alvo, Motor* ph, SensorMotor* sm);
     void mudarDirecao(DirecaoMotor direcaoDireita, DirecaoMotor direcaoEsquerda);
   public:
     Carro(Motor* mtDireita, Motor* mtEsquerda, SensorMotor* smDireita, SensorMotor* smEsquerda, int circRodas);    

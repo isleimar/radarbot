@@ -11,14 +11,20 @@ Carro::Carro(Motor* mtDireita, Motor* mtEsquerda, SensorMotor* smDireita, Sensor
     pulsosEsquerda(0){}
 
 float Carro::rmpAlvo() const{
-  return (this->velocidade * 60.0) / this->circRodas;
+  float velocidade = this->velocidade; //Velocidade em cm/s
+  int circunferencia = this->circRodas; //Circunterencia das rodas em cm
+  float rpm = (velocidade / circunferencia) * 60.0 ; //Rotacoes por minuto
+  return rpm;
 }
 
-void Carro::novoPwm(float alvo, Motor* mt, SensorMotor* sv){
-  float rpm = sv->getRPM();
-  int error = constrain((alvo - rpm), -100, 100);  
-  int novoPwm = map(error, -100, 100, 0, 255);  
-  mt->definirPwm(novoPwm);
+void Carro::novoPwm(float alvo, Motor* mt, SensorMotor* sm){  
+  float rpmAtual = sm->getRPM(); //Rotacoes por minuto
+  int pwmAtual = mt->lerPwm(); //PWM Atual
+  int pwmAlvo = rpmAtual > 0 ? (alvo * pwmAtual) / rpmAtual: 128;
+  mt->definirPwm(pwmAlvo);
+  // int error = constrain((alvo - rpm), -100, 100);  
+  // int novoPwm = map(error, -100, 100, 0, 255);  
+  // mt->definirPwm(novoPwm);
 }
 
 void Carro::mudarDirecao(DirecaoMotor direcaoDireita, DirecaoMotor direcaoEsquerda){
