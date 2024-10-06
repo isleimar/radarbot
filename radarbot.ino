@@ -1,6 +1,6 @@
 #include "Carro.h"
 #include "Motor.h"
-#include "SensorVelocidade.h"
+#include "SensorMotor.h"
 #include "ServoMotor.h"
 #include "SensorDistancia.h"
 #include "Controle.h"
@@ -29,8 +29,8 @@
 Motor motorDireita(PIN_ENB, PIN_IN3, PIN_IN4, true);
 Motor motorEsquerda(PIN_ENA, PIN_IN1, PIN_IN2, true);
 
-SensorVelocidade senVelDireita(SENS_DIREITA, 20);// 20 <== Pulsos por voltas
-SensorVelocidade senVelEsquerda(SENS_ESQUERDA, 20); // 20 <== Pulsos por voltas
+SensorMotor senVelDireita(SENS_DIREITA, 20);// 20 <== Pulsos por voltas
+SensorMotor senVelEsquerda(SENS_ESQUERDA, 20); // 20 <== Pulsos por voltas
 
 Carro carro(&motorDireita, &motorEsquerda, &senVelDireita, &senVelEsquerda, 20); //20cm de diametro das rodas
 

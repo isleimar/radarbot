@@ -3,23 +3,23 @@
 
 #include <Arduino.h>
 #include "Motor.h"
-#include "SensorVelocidade.h"
+#include "SensorMotor.h"
 
 class Carro{
   private:
     Motor* mtDireita;
     Motor* mtEsquerda;    
-    SensorVelocidade* svDireta;
-    SensorVelocidade* svEsquerda;
+    SensorMotor* smDireita;
+    SensorMotor* smEsquerda;
     unsigned long pulsosEsquerda;
     unsigned long pulsosDireita;
     int circRodas; //unidades
     float velocidade; //distancia da circunferencia das rodas por segundo    
     float rmpAlvo() const;
-    void novoPwm(float alvo, Motor* ph, SensorVelocidade* sv);
+    void novoPwm(float alvo, Motor* ph, SensorMotor* sv);
     void mudarDirecao(DirecaoMotor direcaoDireita, DirecaoMotor direcaoEsquerda);
   public:
-    Carro(Motor* mtDireita, Motor* mtEsquerda, SensorVelocidade* svDireta, SensorVelocidade* svEsquerda, int circRodas);    
+    Carro(Motor* mtDireita, Motor* mtEsquerda, SensorMotor* smDireita, SensorMotor* smEsquerda, int circRodas);    
     void definirVelocidade(float velocidade);
     long getDistanciaPercorrida() const;
     void moverFrente();

@@ -1,12 +1,12 @@
-#ifndef SENSORVELOCIDADE_H
-#define SENSORVELOCIDADE_H
+#ifndef SENSORMOTOR_H
+#define SENSORMOTOR_H
 
 #include<Arduino.h>
 
 #define MILISSEGUNDOS_POR_MINUTO 60000.0
 #define INTERVALO_TEMPO 500
 
-class SensorVelocidade{
+class SensorMotor{
   private:
     void (*callBackFunc)();
     int triggerPin;
@@ -15,7 +15,7 @@ class SensorVelocidade{
     unsigned long pulsosTotal;    
     unsigned long tempoAnterior;
   public:
-    SensorVelocidade(int triggerPin, int pulsosPorVolta);
+    SensorMotor(int triggerPin, int pulsosPorVolta);
     void iniciar(void (*func)());
     void incPulso();
     unsigned long getPulsos() const;

@@ -1,38 +1,38 @@
-#include "SensorVelocidade.h"
+#include "SensorMotor.h"
 
-SensorVelocidade::SensorVelocidade(int triggerPin, int pulsosPorVolta):
+SensorMotor::SensorMotor(int triggerPin, int pulsosPorVolta):
   triggerPin(triggerPin),
   pulsosPorVolta(pulsosPorVolta),
   pulsosParcial(0),
   pulsosTotal(0),
   tempoAnterior(millis()){}
 
-void SensorVelocidade::iniciar(void (*func)()){  
+void SensorMotor::iniciar(void (*func)()){  
   pinMode(triggerPin, INPUT);
   callBackFunc = func;
 }
 
-void SensorVelocidade::incPulso(){
+void SensorMotor::incPulso(){
   pulsosParcial++;
 }
 
-unsigned long SensorVelocidade::getPulsos() const{
+unsigned long SensorMotor::getPulsos() const{
   return pulsosParcial;
 }
 
-unsigned long SensorVelocidade::getPulsosTotal() const{
+unsigned long SensorMotor::getPulsosTotal() const{
   return pulsosTotal + pulsosParcial;
 }
 
-float SensorVelocidade::getVoltas() const{
+float SensorMotor::getVoltas() const{
   return ((float)getPulsos() / pulsosPorVolta);
 }
 
-float SensorVelocidade::getVoltasTotal() const{
+float SensorMotor::getVoltasTotal() const{
   return ((float)getPulsosTotal() / pulsosPorVolta);
 }
 
-float SensorVelocidade::getRPM(){
+float SensorMotor::getRPM(){
   long decorrido = millis() - tempoAnterior;
   if (decorrido <= 0){
     return 0.0;
@@ -41,17 +41,17 @@ float SensorVelocidade::getRPM(){
   return rpm;
 }
 
-void SensorVelocidade::reset(){
+void SensorMotor::reset(){
   pulsosTotal += pulsosParcial;
   tempoAnterior = millis();
   pulsosParcial = 0;
 }
 
-void SensorVelocidade::parar(){
+void SensorMotor::parar(){
   detachInterrupt(digitalPinToInterrupt(triggerPin));
 }
 
-void SensorVelocidade::continuar(){  
+void SensorMotor::continuar(){  
   reset();  
   attachInterrupt(digitalPinToInterrupt(triggerPin), callBackFunc, FALLING);
 }
